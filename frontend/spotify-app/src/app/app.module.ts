@@ -7,6 +7,8 @@ import { DashboardViewComponent } from './views/dashboard-view/dashboard-view.co
 import { LoginViewComponent } from './views/login-view/login-view.component';
 import { AuthService } from './services/auth/auth.service';
 import { GuardService } from './services/guard/guard.service';
+import { HttpClientModule } from '@angular/common/http';
+
 
 @NgModule({
   declarations: [
@@ -16,7 +18,8 @@ import { GuardService } from './services/guard/guard.service';
   ],
   imports: [
     BrowserModule,
-    AppRoutingModule
+    AppRoutingModule,
+    HttpClientModule
   ],
   providers: [
     AuthService,

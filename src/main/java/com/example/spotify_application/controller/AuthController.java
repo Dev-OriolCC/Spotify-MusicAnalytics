@@ -1,9 +1,11 @@
 package com.example.spotify_application.controller;
 
 import com.example.spotify_application.service.Keys;
-import org.apache.hc.core5.http.HttpStatus;
+import lombok.*;
+//import org.apache.hc.core5.http.HttpStatus;
 import org.apache.hc.core5.http.ParseException;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import se.michaelthelin.spotify.SpotifyApi;
@@ -19,14 +21,15 @@ import se.michaelthelin.spotify.requests.data.personalization.simplified.GetUser
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.net.URI;
+import java.util.Arrays;
 
 @RestController
 @RequestMapping("/api/v1")
 @CrossOrigin
 public class AuthController {
 
-    //private static final URI redirectUri = SpotifyHttpManager.makeUri("http://localhost:8080/api/v1/get-user-code");
-    private static final URI redirectUri = SpotifyHttpManager.makeUri("http://localhost:4200/dashboard-view");
+    private static final URI redirectUri = SpotifyHttpManager.makeUri("http://localhost:8080/api/v1/get-user-code");
+    //private static final URI redirectUri = SpotifyHttpManager.makeUri("http://localhost:4200/dashboard-view");
 
     private String code = "";
 
@@ -71,13 +74,22 @@ public class AuthController {
     @GetMapping("/get-user-code")
     public String getSpotifyUserCode(@RequestParam("code") String userCode, HttpServletResponse response) throws IOException {
         String res = createAccessToken(userCode);
+        System.out.println(res);
         if (res!= null) {
             System.out.println("Correct");
+//            customResponse.setAccessToken(spotifyApi.getAccessToken());
+//            customResponse.setUrl("http://localhost:4200/dashboard-view");
+//            return new ResponseEntity<>(customResponse, HttpStatus.OK);
+            response.sendRedirect("http://localhost:4200/dashboard-view?token="+spotifyApi.getAccessToken());
         } else {
             System.out.println("Error");
+//            customResponse.setAccessToken(spotifyApi.getAccessToken());
+//            customResponse.setUrl("http://localhost:4200/");
+//            return new ResponseEntity<>(customResponse, HttpStatus.BAD_REQUEST);
+            response.sendRedirect("http://localhost:4200/");
         }
-        System.out.println(res);
-        return res;
+        return spotifyApi.getAccessToken();
+
         //response.sendRedirect("http://localhost:8080/api/v1/user-top-artists"); // Dashboard
 //        response.sendRedirect("http://localhost:4200/dashboard-view?token=" +spotifyApi.getAccessToken() );
 //
@@ -87,6 +99,7 @@ public class AuthController {
 
     private String createAccessToken(String userCode) {
         AuthorizationCodeRequest authorizationCodeRequest = spotifyApi.authorizationCode(userCode).build();
+        System.out.println("Creating access token... ");
         try {
             final AuthorizationCodeCredentials authorizationCodeCredentials = authorizationCodeRequest.execute();
             //
@@ -100,9 +113,36 @@ public class AuthController {
         }
     }
 
+//    private boolean checkToken(String token) {
+//        spotifyApi.setAccessToken(token);
+//        ;
+//        if (spotifyApi.get()) {
+//            return true;
+//        }
+//        return false;
+//    }
+
+//    @GetMapping("/user-top-artists") // Check if this works...
+//    public Artist[] getUserTopArtists() {
+//        System.out.println("Spotify: "+spotifyApi.getAccessToken());
+//        final GetUsersTopArtistsRequest getUsersTopArtistsRequest = spotifyApi.getUsersTopArtists()
+//                .time_range("medium_term")
+//                .limit(20)
+//                .offset(5)
+//                .build();
+//        try {
+//            final Paging<Artist> artistPaging = getUsersTopArtistsRequest.execute();
+//            return artistPaging.getItems();
+//        } catch (Exception e) {
+//            System.out.println("Error :C = "+ e);
+//        }
+//        return new Artist[0];
+//    }
+
     @GetMapping("/user-top-artists")
-    public Artist[] getUserTopArtists() {
-        System.out.println("Spotify: "+spotifyApi.getAccessToken());
+    public Artist[] getUserTopArtists(@RequestHeader("Authorization") String token) {
+        System.out.println("Spring Boot-Token: "+token);
+        spotifyApi.setAccessToken(token);
         final GetUsersTopArtistsRequest getUsersTopArtistsRequest = spotifyApi.getUsersTopArtists()
                 .time_range("medium_term")
                 .limit(20)
@@ -110,15 +150,24 @@ public class AuthController {
                 .build();
         try {
             final Paging<Artist> artistPaging = getUsersTopArtistsRequest.execute();
+            System.out.println("Spring Boot-Artist"+ Arrays.toString(artistPaging.getItems()));
             return artistPaging.getItems();
         } catch (Exception e) {
             System.out.println("Error :C = "+ e);
         }
         return new Artist[0];
-    }
-
-    public CustomResponse {
 
     }
+
+//    @Getter
+//    @Setter
+//    @AllArgsConstructor
+//    @NoArgsConstructor
+//    @Builder
+//    public class CustomResponse {
+//        String accessToken;
+//        String url;
+//        String status;
+//    }
 
 }

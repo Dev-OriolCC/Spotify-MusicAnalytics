@@ -1,5 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { apiUrl } from 'src/app/constants';
 
 
 @Component({
@@ -11,32 +13,40 @@ export class DashboardViewComponent implements OnInit {
   token?: string | null;
   code?: string | null;
 
-  constructor(private router: ActivatedRoute) {
+  constructor(private router: ActivatedRoute, private http: HttpClient) {
     //this.token = null;
   }
 
   ngOnInit(): void {
-    console.log("This is the user code from the redirect");
-    this.code = this.router.snapshot.queryParamMap.get('code');
-    console.log(this.code);
+    this.token = this.router.snapshot.queryParamMap.get('token');
+    console.log("Token de Spring Boot: "+this.token);
     // Verify it is valid
 
     // Reload if correct.
 
     // Local Storage
-
+    sessionStorage.setItem("token", this.token ?? "");
     // Fetch Datra
-
-    // this.token = this.router.snapshot.queryParamMap.get('token');
-    // console.log(this.token);
-    // console.log("Store token: " + this.token);
-    // //const token = this.token;
-    // if(this.token != null) {
-    //   sessionStorage.setItem("token", this.token);
-    //   const storedToken = sessionStorage.getItem('token');
-    //   console.log("Session Token: "+storedToken); 
-    // } 
-
+    this.fetchTopArtists();
   }
+
+  fetchTopArtists(): void {
+    const token = sessionStorage.getItem('token') ?? '';
+    const headers = new HttpHeaders().set('Authorization',token);
+
+    this.http.get(apiUrl+"api/v1/user-top-artists", { headers }).subscribe(
+      (response: any) => {
+        console.log("Tracks: ")
+        console.log(response)
+      },
+      (error) => {
+        console.log("Error while fetching tracks...")
+        console.log(error)
+      }
+
+    )
+  }
+
+
 
 }
