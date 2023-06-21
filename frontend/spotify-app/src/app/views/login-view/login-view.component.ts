@@ -19,6 +19,8 @@ export class LoginViewComponent {
   }
 
   ngOnInit(): void {
+
+
     // Check if the user is authenticated
     const isAuthenticated = this.authService.isAuthenticatedCheck();
 

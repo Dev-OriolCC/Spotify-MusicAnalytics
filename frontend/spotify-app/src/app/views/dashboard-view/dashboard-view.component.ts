@@ -12,10 +12,11 @@ export class DashboardViewComponent implements OnInit {
   
   token?: string | null;
   code?: string | null;
+  loading: boolean = true;
 
   constructor(private router: ActivatedRoute, private http: HttpClient) {
-    //this.token = null;
   }
+  
 
   ngOnInit(): void {
     this.token = this.router.snapshot.queryParamMap.get('token');
@@ -38,6 +39,7 @@ export class DashboardViewComponent implements OnInit {
       (response: any) => {
         console.log("Tracks: ")
         console.log(response)
+        this.loading = true;
       },
       (error) => {
         console.log("Error while fetching tracks...")

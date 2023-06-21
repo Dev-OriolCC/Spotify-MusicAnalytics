@@ -3,11 +3,13 @@ import { DashboardViewComponent } from './views/dashboard-view/dashboard-view.co
 import { LoginViewComponent } from './views/login-view/login-view.component';
 import { RouterModule, Routes } from '@angular/router';
 import { GuardService } from './services/guard/guard.service';
+import { DonutChartComponent } from './components/donut-chart/donut-chart.component';
 
 const routes: Routes = [
 
   { path: 'dashboard-view', component: DashboardViewComponent }, //, canActivate: [GuardService] },
-  { path: '', component: LoginViewComponent }
+  { path: '', component: LoginViewComponent },
+  {path: 'doughnut-chart', component: DonutChartComponent}
 ];
 
 @NgModule({
