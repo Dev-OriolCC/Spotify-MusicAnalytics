@@ -31,9 +31,13 @@
         <!-- Example: Comment -->
         <a routerLink="/dashboard-view">Go to New View</a>
         <!-- TEst    -->
-        <li class="nav-item">
+        <!-- <li class="nav-item">
             <a class="nav-link" routerLink="/doughnut-chart">Doughnut Chart</a>
-        </li>
+        </li> -->
+        <app-donut-chart 
+            [chartLabels]="[ 'Taylor Swift', 'Billie Eilish', 'Olivia Rodrigo' ]" 
+            [chartData]="[ 10, 39, 2 ]"
+        />
         <!-- <app-chart></app-chart> -->
     </div>
 </div>
