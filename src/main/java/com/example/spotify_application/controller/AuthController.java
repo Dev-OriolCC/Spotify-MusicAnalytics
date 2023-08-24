@@ -1,34 +1,35 @@
 package com.example.spotify_application.controller;
 
 import com.example.spotify_application.service.Keys;
-import org.apache.hc.core5.http.ParseException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import se.michaelthelin.spotify.SpotifyApi;
 import se.michaelthelin.spotify.SpotifyHttpManager;
-import se.michaelthelin.spotify.exceptions.SpotifyWebApiException;
 import se.michaelthelin.spotify.model_objects.credentials.AuthorizationCodeCredentials;
 import se.michaelthelin.spotify.model_objects.specification.Artist;
 import se.michaelthelin.spotify.model_objects.specification.Paging;
-import se.michaelthelin.spotify.model_objects.specification.Track;
 import se.michaelthelin.spotify.requests.authorization.authorization_code.AuthorizationCodeRequest;
 import se.michaelthelin.spotify.requests.authorization.authorization_code.AuthorizationCodeUriRequest;
 import se.michaelthelin.spotify.requests.data.personalization.simplified.GetUsersTopArtistsRequest;
-import se.michaelthelin.spotify.requests.data.personalization.simplified.GetUsersTopTracksRequest;
-import java.io.IOException;
 import java.net.URI;
-import java.util.Arrays;
 import java.util.List;
 
+/**
+ * Controller with endpoints for the spotify authentication code flow.
+ *
+ * @version 1
+ * @since 08/22/2023
+ */
 @RestController
 @RequestMapping("/api/v1")
 @CrossOrigin
 public class AuthController {
+
     private static final String clientId = Keys.CLIENT_ID.getKey();
     private static final String clientSecret = Keys.CLIENT_SECRET.getKey();
     private static final URI redirectUri = SpotifyHttpManager.makeUri("http://localhost:8080/api/v1/get-user-code");
-    SpotifyApi spotifyApi =  new SpotifyApi.Builder()
+    public static final SpotifyApi spotifyApi =  new SpotifyApi.Builder()
             .setClientId(clientId)
             .setClientSecret(clientSecret)
             .setRedirectUri(redirectUri)
@@ -82,7 +83,7 @@ public class AuthController {
      * @return
      */
     @GetMapping("/user-top-artists")
-    public ResponseEntity<List<Artist>> getUserTopArtists(
+        public ResponseEntity<List<Artist>> getUserTopArtists(
             @RequestParam(name = "time_range", defaultValue = "medium_term") String timeRange,
             @RequestParam(defaultValue = "20") int limit,
             @RequestParam(defaultValue = "0") int offset) {
@@ -103,15 +104,5 @@ public class AuthController {
         }
 
     }
-
-    @GetMapping("/test")
-    public void getTest() throws IOException, ParseException, SpotifyWebApiException {
-        System.out.println("/test -> AccessToken: "+spotifyApi.getAccessToken());
-        GetUsersTopTracksRequest getUsersTopTracksRequest = spotifyApi.getUsersTopTracks().time_range("medium_term").limit(10).offset(5).build();
-        Paging<Track> trackPaging =  getUsersTopTracksRequest.execute();
-        System.out.println(Arrays.toString(trackPaging.getItems()));
-    }
-
-
 
 }
