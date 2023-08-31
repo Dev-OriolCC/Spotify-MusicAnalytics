@@ -1,10 +1,12 @@
 package com.example.spotify_application.controller;
 
+import com.example.spotify_application.service.TrackService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import se.michaelthelin.spotify.model_objects.specification.Paging;
+import se.michaelthelin.spotify.model_objects.specification.Track;
 import se.michaelthelin.spotify.requests.data.personalization.simplified.GetUsersTopTracksRequest;
-import se.michaelthelin.spotify.requests.data.search.simplified.SearchTracksRequest;
 
 import static com.example.spotify_application.controller.AuthController.spotifyApi;
 
@@ -20,27 +22,30 @@ import static com.example.spotify_application.controller.AuthController.spotifyA
 @CrossOrigin
 public class TracksController {
 
+    private final TrackService trackService;
+
+    public TracksController(TrackService trackService) {
+        this.trackService = trackService;
+    }
 
     /**
-     *
      * @param trackName
      * @param trackArtist
      * @return
+     * @Example
      */
     @GetMapping
-    public ResponseEntity<SearchTracksRequest> getTrack(
-            @RequestParam(name = "track", defaultValue = "") String trackName,
-            @RequestParam(name = "artist", defaultValue = "") String trackArtist
+    public ResponseEntity<Paging<Track>> getTrack(
+            @RequestParam(name = "track", defaultValue = "AMOUR") String trackName,
+            @RequestParam(name = "artist", defaultValue = "The Warning") String trackArtist
     ) {
-        System.out.println("/tracks -> AccessToken: "+spotifyApi.getAccessToken());
-        try {
-            SearchTracksRequest track = spotifyApi.searchTracks("2").build();
-                    //getTrack("dasdasd").build();
-            return ResponseEntity.ok(track);
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        Paging<Track> tracks = trackService.searchTrack(trackName, trackArtist);
+        if (tracks != null) {
+            return ResponseEntity.ok(tracks);
         }
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
     }
+
 
     /**
      *
@@ -55,17 +60,12 @@ public class TracksController {
             @RequestParam(defaultValue = "5") int limit,
             @RequestParam(defaultValue = "0") int offset
     ) {
-        System.out.println("/tracks -> AccessToken: "+spotifyApi.getAccessToken());
-        try {
-            GetUsersTopTracksRequest getUsersTopTracksRequest = spotifyApi.getUsersTopTracks()
-                    .time_range(timeRange)
-                    .limit(limit)
-                    .offset(offset)
-                    .build();
+        GetUsersTopTracksRequest getUsersTopTracksRequest = trackService.getUsersTopTracks(timeRange, limit, offset);
+        if (getUsersTopTracksRequest != null) {
             return ResponseEntity.ok(getUsersTopTracksRequest);
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+
     }
 
 
