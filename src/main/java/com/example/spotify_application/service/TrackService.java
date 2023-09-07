@@ -18,18 +18,15 @@ import static com.example.spotify_application.controller.AuthController.spotifyA
 @Service
 public class TrackService {
     public Paging<Track> searchTrack(String trackName, String trackArtist) {
-        trackName = trackName.replaceAll(" ", "%20");
-        trackArtist = trackArtist.replaceAll(" ", "%20");
+        trackName = trackName.replaceAll("%20", " ");
+        trackArtist = trackArtist.replaceAll("%20", " ");
         String type = ModelObjectType.TRACK.getType();
         try {
-            //String searchQuery = "honey%20artist:Halsey";
-            String searchQuery = trackName+"%20artist:"+trackArtist;
-            final SearchItemRequest searchItemRequestTrack = spotifyApi.searchItem(searchQuery, type).limit(1).offset(1).build();
-            System.out.println("Request: "+searchItemRequestTrack.getJson());
+            String searchQuery = "track:"+trackName+" artist:\""+trackArtist+"\"";
+            System.out.println("Search Query: "+searchQuery);
+            final SearchItemRequest searchItemRequestTrack = spotifyApi.searchItem(searchQuery, type).limit(1).offset(0).build(); // offset(1)
             final SearchResult searchResult = searchItemRequestTrack.execute();
-
             System.out.println("Tracks->"+ Arrays.toString(searchResult.getTracks().getItems()));
-            System.out.println("Total tracks: " + searchResult.getTracks().getTotal());
             return searchResult.getTracks();
         } catch (Exception e) {
             return null;

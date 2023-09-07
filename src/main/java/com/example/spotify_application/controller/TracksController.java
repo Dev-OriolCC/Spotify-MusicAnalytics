@@ -36,8 +36,8 @@ public class TracksController {
      */
     @GetMapping
     public ResponseEntity<Paging<Track>> getTrack(
-            @RequestParam(name = "track", defaultValue = "AMOUR") String trackName,
-            @RequestParam(name = "artist", defaultValue = "The Warning") String trackArtist
+            @RequestParam(name = "track", defaultValue = "honey") String trackName,
+            @RequestParam(name = "artist", defaultValue = "Halsey") String trackArtist
     ) {
         Paging<Track> tracks = trackService.searchTrack(trackName, trackArtist);
         if (tracks != null) {
@@ -45,7 +45,6 @@ public class TracksController {
         }
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
     }
-
 
     /**
      *
