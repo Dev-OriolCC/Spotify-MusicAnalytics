@@ -2,12 +2,14 @@ package com.example.spotify_application.service;
 
 import org.springframework.stereotype.Service;
 import se.michaelthelin.spotify.model_objects.special.SnapshotResult;
-import se.michaelthelin.spotify.model_objects.specification.Paging;
 import se.michaelthelin.spotify.model_objects.specification.Playlist;
 import se.michaelthelin.spotify.model_objects.specification.PlaylistSimplified;
 import se.michaelthelin.spotify.requests.data.playlists.AddItemsToPlaylistRequest;
 import se.michaelthelin.spotify.requests.data.playlists.CreatePlaylistRequest;
 import se.michaelthelin.spotify.requests.data.playlists.GetListOfUsersPlaylistsRequest;
+
+import java.util.Arrays;
+import java.util.Optional;
 
 import static com.example.spotify_application.controller.AuthController.spotifyApi;
 
@@ -20,18 +22,24 @@ public class PlaylistService {
     public PlaylistService(AuthService authService) {
         this.authService = authService;
     }
-    // Get full info from track
 
-    //* Get Spotify ID
-    //* Get User Playlists
-    //* Create Playlist
-    //* Add Item to Playlist
-
-    public Paging<PlaylistSimplified> getUsersPlaylists() {
+    public String getUsersPlaylists() {
         try {
             String userSpotifyId = authService.getCurrentUserProfile().getId();
-            final GetListOfUsersPlaylistsRequest getListOfUsersPlaylistsRequest = spotifyApi.getListOfUsersPlaylists(userSpotifyId).build();
-            return getListOfUsersPlaylistsRequest.execute();
+            final GetListOfUsersPlaylistsRequest getListOfUsersPlaylistsRequest = spotifyApi.getListOfUsersPlaylists(userSpotifyId).limit(50).build();
+            PlaylistSimplified[] usersPlaylists = getListOfUsersPlaylistsRequest.execute().getItems();
+
+            Optional<PlaylistSimplified> playlistFound = Arrays.stream(usersPlaylists).filter(element ->
+                    element.getName().equals("MusicAppTracks"))
+                    .findFirst();
+
+            if (playlistFound.isPresent()) {
+                return playlistFound.get().getId();
+            } else {
+                Playlist playlist = this.createPlaylist();
+                System.out.println("Created MusicAppTracks Playlist ID-> "+playlist.getId());
+                return playlist.getId();
+            }
         } catch (Exception e) {
             return null;
         }
@@ -39,20 +47,27 @@ public class PlaylistService {
 
     public Playlist createPlaylist() {
         try {
-            String userSpotifyId = authService.getCurrentUserProfile().getId();
-            final CreatePlaylistRequest createPlaylistRequest = spotifyApi.createPlaylist(userSpotifyId, playlistName).build();
+            String userSpotifyId = authService.getCurrentUserProfile().getId(); // Change
+            final CreatePlaylistRequest createPlaylistRequest = spotifyApi
+                    .createPlaylist(userSpotifyId, playlistName)
+                    .public_(false)
+                    .description("Spotify playlist created with your Shazam songs")
+                    .build();
             return createPlaylistRequest.execute();
         } catch (Exception e) {
             return null;
         }
     }
 
-    public SnapshotResult addItemToPlaylist() {
+    public SnapshotResult addItemToPlaylist(String trackId) {
         try {
-            String[] uri = new String[]{"test"};
-            String playlistId = "";
-            final AddItemsToPlaylistRequest addItemsToPlaylistRequest = spotifyApi.addItemsToPlaylist(playlistId, uri).build();
-            return addItemsToPlaylistRequest.execute();
+            String[] uri = new String[]{"spotify:track:"+trackId};
+            String playlistId = this.getUsersPlaylists(); // "0wfO28Iib96AvILBukbxTr";
+            if (playlistId != null) {
+                final AddItemsToPlaylistRequest addItemsToPlaylistRequest = spotifyApi.addItemsToPlaylist(playlistId, uri).build();
+                return addItemsToPlaylistRequest.execute();
+            }
+            return null;
         } catch (Exception e) {
             return null;
         }

@@ -5,9 +5,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import se.michaelthelin.spotify.model_objects.special.SnapshotResult;
-import se.michaelthelin.spotify.model_objects.specification.Paging;
 import se.michaelthelin.spotify.model_objects.specification.Playlist;
-import se.michaelthelin.spotify.model_objects.specification.PlaylistSimplified;
 
 @RestController
 @RequestMapping("/api/v1/playlists")
@@ -21,8 +19,9 @@ public class PlaylistController {
     }
 
     @GetMapping
-    public ResponseEntity<Paging<PlaylistSimplified>> getUsersPlaylist() {
-        Paging<PlaylistSimplified> playlists = playlistService.getUsersPlaylists();
+    public ResponseEntity<String> getUsersPlaylist() {
+        // Paging<SimplifiedPlaylists>
+        String playlists = playlistService.getUsersPlaylists();
         if (playlists != null) {
             return ResponseEntity.ok(playlists);
         }
@@ -38,9 +37,11 @@ public class PlaylistController {
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
     }
 
-    @PostMapping("/addItem")
-    public ResponseEntity<SnapshotResult> addItem() {
-        SnapshotResult snapshotResult = playlistService.addItemToPlaylist();
+    @PostMapping("/addTrack/{id}")
+    public ResponseEntity<SnapshotResult> addTrack(
+            @PathVariable String id
+    ) {
+        SnapshotResult snapshotResult = playlistService.addItemToPlaylist(id);
         if (snapshotResult != null) {
             return ResponseEntity.ok(snapshotResult);
         }
