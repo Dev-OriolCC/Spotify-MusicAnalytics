@@ -30,7 +30,7 @@ public class PlaylistService {
             PlaylistSimplified[] usersPlaylists = getListOfUsersPlaylistsRequest.execute().getItems();
 
             Optional<PlaylistSimplified> playlistFound = Arrays.stream(usersPlaylists).filter(element ->
-                    element.getName().equals("MusicAppTracks"))
+                    element.getName().equals(playlistName)) // Change here
                     .findFirst();
 
             if (playlistFound.isPresent()) {
@@ -59,10 +59,11 @@ public class PlaylistService {
         }
     }
 
+
     public SnapshotResult addItemToPlaylist(String trackId) {
         try {
             String[] uri = new String[]{"spotify:track:"+trackId};
-            String playlistId = this.getUsersPlaylists(); // "0wfO28Iib96AvILBukbxTr";
+            String playlistId = this.getUsersPlaylists();
             if (playlistId != null) {
                 final AddItemsToPlaylistRequest addItemsToPlaylistRequest = spotifyApi.addItemsToPlaylist(playlistId, uri).build();
                 return addItemsToPlaylistRequest.execute();

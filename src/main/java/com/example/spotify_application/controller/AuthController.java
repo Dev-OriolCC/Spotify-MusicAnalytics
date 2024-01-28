@@ -56,10 +56,10 @@ public class AuthController {
     @GetMapping("/get-user-code")
     public ResponseEntity<String> getSpotifyUserCode(@RequestParam("code") String userCode)  {
         System.out.println("Code: "+userCode);
-        String accesToken = authService.getAccessToken(userCode);
+        String accessToken = authService.getAccessToken(userCode);
 
-        if (!accesToken.isEmpty()) { // Pending to test this
-            return ResponseEntity.ok(accesToken);
+        if (!accessToken.isEmpty()) { // Pending to test this
+            return ResponseEntity.ok(accessToken);
         }
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
     }

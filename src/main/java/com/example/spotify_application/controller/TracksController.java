@@ -1,14 +1,17 @@
 package com.example.spotify_application.controller;
 
+import com.example.spotify_application.service.FileService;
 import com.example.spotify_application.service.TrackService;
+import org.apache.commons.csv.CSVPrinter;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import se.michaelthelin.spotify.model_objects.specification.Paging;
+import se.michaelthelin.spotify.model_objects.specification.PlaylistTrack;
 import se.michaelthelin.spotify.model_objects.specification.Track;
 import se.michaelthelin.spotify.requests.data.personalization.simplified.GetUsersTopTracksRequest;
 
-import static com.example.spotify_application.controller.AuthController.spotifyApi;
+import java.io.IOException;
 
 
 /**
@@ -23,9 +26,11 @@ import static com.example.spotify_application.controller.AuthController.spotifyA
 public class TracksController {
 
     private final TrackService trackService;
+    private final FileService fileService;
 
-    public TracksController(TrackService trackService) {
+    public TracksController(TrackService trackService, FileService fileService) {
         this.trackService = trackService;
+        this.fileService = fileService;
     }
 
     /**
@@ -44,6 +49,18 @@ public class TracksController {
             return ResponseEntity.ok(tracks);
         }
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+    }
+
+    @GetMapping("/playlistTracks")
+    public ResponseEntity<String> getPlaylistTracks(
+            @RequestParam(name = "playlistId") String playlistId
+    ) throws IOException {
+       PlaylistTrack[] playlistTracks = trackService.getTracksFromPlaylistById(playlistId);
+        CSVPrinter file = fileService.createFile();
+        fileService.writeDataOnFile(file, playlistTracks);
+        file.flush();
+
+       return ResponseEntity.ok(file.toString());
     }
 
     /**

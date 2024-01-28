@@ -20,10 +20,10 @@ public class PlaylistController {
 
     @GetMapping
     public ResponseEntity<String> getUsersPlaylist() {
-        // Paging<SimplifiedPlaylists>
-        String playlists = playlistService.getUsersPlaylists();
-        if (playlists != null) {
-            return ResponseEntity.ok(playlists);
+        String playlistId = playlistService.getUsersPlaylists();
+        if (playlistId != null) {
+            System.out.println("ID: "+playlistId);
+            return ResponseEntity.ok(playlistId);
         }
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
     }

@@ -1,14 +1,13 @@
 package com.example.spotify_application.service;
 
-import com.neovisionaries.i18n.CountryCode;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import se.michaelthelin.spotify.enums.ModelObjectType;
 import se.michaelthelin.spotify.model_objects.special.SearchResult;
 import se.michaelthelin.spotify.model_objects.specification.Paging;
+import se.michaelthelin.spotify.model_objects.specification.PlaylistTrack;
 import se.michaelthelin.spotify.model_objects.specification.Track;
 import se.michaelthelin.spotify.requests.data.personalization.simplified.GetUsersTopTracksRequest;
+import se.michaelthelin.spotify.requests.data.playlists.GetPlaylistsItemsRequest;
 import se.michaelthelin.spotify.requests.data.search.SearchItemRequest;
 
 import java.util.Arrays;
@@ -17,6 +16,10 @@ import static com.example.spotify_application.controller.AuthController.spotifyA
 
 @Service
 public class TrackService {
+    public Paging<Track> getCurrentlyPlayingTrack() {
+        
+    }
+
     public Paging<Track> searchTrack(String trackName, String trackArtist) {
         trackName = trackName.replaceAll("%20", " ");
         trackArtist = trackArtist.replaceAll("%20", " ");
@@ -33,6 +36,19 @@ public class TrackService {
         }
     }
 
+    public PlaylistTrack[] getTracksFromPlaylistById(String playlistId) {
+        try {
+            final GetPlaylistsItemsRequest getPlaylistsItemsRequest = spotifyApi.getPlaylistsItems(playlistId).build();
+            final Paging<PlaylistTrack> playlistTracks = getPlaylistsItemsRequest.execute();
+            System.out.println("Total: "+playlistTracks.getTotal());
+            return playlistTracks.getItems();
+        } catch (Exception e) {
+            System.out.println("getTracksFromPlaylist()__Error: "+e);
+        }
+
+        return new PlaylistTrack[0];
+    }
+
     public GetUsersTopTracksRequest getUsersTopTracks(String timeRange, int limit, int offset) {
 
         try {
@@ -45,5 +61,7 @@ public class TrackService {
             return null;
         }
     }
+
+
 
 }
