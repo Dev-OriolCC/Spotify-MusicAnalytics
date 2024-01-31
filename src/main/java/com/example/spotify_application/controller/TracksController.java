@@ -6,6 +6,7 @@ import org.apache.commons.csv.CSVPrinter;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import se.michaelthelin.spotify.model_objects.miscellaneous.CurrentlyPlaying;
 import se.michaelthelin.spotify.model_objects.specification.Paging;
 import se.michaelthelin.spotify.model_objects.specification.PlaylistTrack;
 import se.michaelthelin.spotify.model_objects.specification.Track;
@@ -49,6 +50,12 @@ public class TracksController {
             return ResponseEntity.ok(tracks);
         }
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+    }
+
+    @GetMapping("/currentTrack")
+    public ResponseEntity<CurrentlyPlaying> getCurrentPlayingTrack() {
+        CurrentlyPlaying currentlyPlayingTrack = trackService.getCurrentlyPlayingTrack();
+        return ResponseEntity.ok(currentlyPlayingTrack);
     }
 
     @GetMapping("/playlistTracks")

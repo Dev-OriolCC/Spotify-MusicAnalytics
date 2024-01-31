@@ -2,11 +2,13 @@ package com.example.spotify_application.service;
 
 import org.springframework.stereotype.Service;
 import se.michaelthelin.spotify.enums.ModelObjectType;
+import se.michaelthelin.spotify.model_objects.miscellaneous.CurrentlyPlaying;
 import se.michaelthelin.spotify.model_objects.special.SearchResult;
 import se.michaelthelin.spotify.model_objects.specification.Paging;
 import se.michaelthelin.spotify.model_objects.specification.PlaylistTrack;
 import se.michaelthelin.spotify.model_objects.specification.Track;
 import se.michaelthelin.spotify.requests.data.personalization.simplified.GetUsersTopTracksRequest;
+import se.michaelthelin.spotify.requests.data.player.GetUsersCurrentlyPlayingTrackRequest;
 import se.michaelthelin.spotify.requests.data.playlists.GetPlaylistsItemsRequest;
 import se.michaelthelin.spotify.requests.data.search.SearchItemRequest;
 
@@ -16,8 +18,20 @@ import static com.example.spotify_application.controller.AuthController.spotifyA
 
 @Service
 public class TrackService {
-    public Paging<Track> getCurrentlyPlayingTrack() {
-        
+    
+
+    public CurrentlyPlaying getCurrentlyPlayingTrack() {
+        try {
+            final GetUsersCurrentlyPlayingTrackRequest currentlyPlayingTrackRequest = spotifyApi.getUsersCurrentlyPlayingTrack().build();
+            final CurrentlyPlaying currentlyPlayingTrack = currentlyPlayingTrackRequest.execute();
+            
+            System.out.println(currentlyPlayingTrack.getItem().getName());
+            System.out.println(getArtistFromTrackObject(currentlyPlayingTrack));
+
+            return currentlyPlayingTrack;
+        } catch (Exception e) {
+            return null;
+        }
     }
 
     public Paging<Track> searchTrack(String trackName, String trackArtist) {
@@ -60,6 +74,25 @@ public class TrackService {
         } catch (Exception e) {
             return null;
         }
+    }
+
+    public String getArtistFromTrackObject(CurrentlyPlaying currentlyPlaying) {
+        String currentTrack = currentlyPlaying.toString();
+        int startIndex = currentTrack.indexOf("ArtistSimplified(name=");
+
+        if (startIndex != -1) {
+            // Extract the substring starting from the index of "ArtistSimplified(name=" to the end
+            String remainingString = currentTrack.substring(startIndex + "ArtistSimplified(name=".length());
+
+            // Find the index of the closing parenthesis
+            int endIndex = remainingString.indexOf(",");
+
+            if (endIndex != -1) {
+                // Extract the substring up to the closing parenthesis
+                return remainingString.substring(0, endIndex);
+            }
+        }
+        return currentTrack;
     }
 
 

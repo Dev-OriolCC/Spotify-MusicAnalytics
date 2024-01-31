@@ -9,9 +9,11 @@ public class SpotifyCheckerService {
     static final Logger logger = LoggerFactory.getLogger(SpotifyCheckerService.class);
     static String previousTrackInfo = "";
 
+    private static TrackService trackService = new TrackService();
+
     public static void checkForSongChange() {
         //
-        String currentTrackInfo = "Cruel Summer"; //getCurrentlyPlayingTrack(accessToken);
+        String currentTrackInfo = String.valueOf(trackService.getCurrentlyPlayingTrack());
         logger.info("Current Track: " + currentTrackInfo);
 
         if (currentTrackInfo != null && !currentTrackInfo.equals(previousTrackInfo) && previousTrackInfo != "") { // test remove previous
