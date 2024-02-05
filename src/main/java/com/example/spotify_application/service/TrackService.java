@@ -24,7 +24,7 @@ public class TrackService {
         try {
             final GetUsersCurrentlyPlayingTrackRequest currentlyPlayingTrackRequest = spotifyApi.getUsersCurrentlyPlayingTrack().build();
             final CurrentlyPlaying currentlyPlayingTrack = currentlyPlayingTrackRequest.execute();
-            
+
             System.out.println(currentlyPlayingTrack.getItem().getName());
             System.out.println(getArtistFromTrackObject(currentlyPlayingTrack));
 

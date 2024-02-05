@@ -38,6 +38,7 @@ public class ArtistService {
         System.out.println(artistFound);
 
 
+        return artistFound;
     }
 
 

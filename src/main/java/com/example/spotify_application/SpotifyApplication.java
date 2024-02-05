@@ -20,10 +20,10 @@ public class SpotifyApplication {
 	// Validate if it's in the list
 	// Change it for the Taylor's Version.
 
-	//2.--
-	// Give a Artist
-	// Get all albums
-	// Filter removing Concerts Albums, Singles, Editions
+	//2.-- TODO
+	// Give a Artist X
+	// Get all albums from artist X
+	// Create playlist and add them
 	// Play them
 	// If it's not TYs Version, change it
 	//
@@ -31,7 +31,7 @@ public class SpotifyApplication {
 
 	public static void main(String[] args) {
 		SpringApplication.run(SpotifyApplication.class, args);
-		scheduler.scheduleAtFixedRate(SpotifyCheckerService::checkForSongChange, 0, 60, TimeUnit.SECONDS);
+		//scheduler.scheduleAtFixedRate(SpotifyCheckerService::checkForSongChange, 0, 60, TimeUnit.SECONDS);
 
 	}
 
